@@ -1,0 +1,139 @@
+#include <stdio.h>
+
+struct Data {
+    int dia;
+    int mes;
+    int ano;
+};
+
+struct Paciente {
+    int codigo;
+    char nome[50];
+    char telefone[20];
+};
+
+struct Consulta {
+    struct Paciente paciente;
+    struct Data data;
+    char descricao[100];
+};
+
+int main() {
+    struct Paciente pacientes[15];
+    struct Consulta consultas[30];
+    int totalPacientes = 0, totalConsultas = 0, opcao, i, j;
+    int codigoBusca, posicaoEncontrada, encontrou, diaBusca, mesBusca, anoBusca;
+    int contadorConsultas, maiorAtendimentos, indicePacienteMaisAtendido;
+
+    do {
+        printf("\n1 - Cadastrar paciente\n");
+        printf("2 - Registrar consulta\n");
+        printf("3 - Buscar consultas por paciente\n");
+        printf("4 - Listar consultas por data\n");
+        printf("5 - Contabilizar atendimentos\n");
+        printf("0 - Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if (totalPacientes >= 15) {
+                    printf("Limite de pacientes atingido.\n");
+                    break;
+                }
+                printf("Codigo: ");
+                scanf("%d", &pacientes[totalPacientes].codigo);
+                printf("Nome: ");
+                scanf(" %[^\n]", pacientes[totalPacientes].nome);
+                printf("Telefone: ");
+                scanf(" %[^\n]", pacientes[totalPacientes].telefone);
+                totalPacientes++;
+                break;
+
+            case 2:
+                if (totalConsultas >= 30) {
+                    printf("Limite de consultas atingido.\n");
+                    break;
+                }
+                printf("Codigo do paciente: ");
+                scanf("%d", &codigoBusca);
+
+                posicaoEncontrada = -1;
+                for (i = 0; i < totalPacientes; i++) {
+                    if (pacientes[i].codigo == codigoBusca) {
+                        posicaoEncontrada = i;
+                    }
+                }
+
+                if (posicaoEncontrada == -1) {
+                    printf("Paciente nao encontrado.\n");
+                } else {
+                    consultas[totalConsultas].paciente = pacientes[posicaoEncontrada];
+                    printf("Data (dia mes ano): ");
+                    scanf("%d %d %d", &consultas[totalConsultas].data.dia, &consultas[totalConsultas].data.mes, &consultas[totalConsultas].data.ano);
+                    printf("Descricao: ");
+                    scanf(" %[^\n]", consultas[totalConsultas].descricao);
+                    totalConsultas++;
+                }
+                break;
+
+            case 3:
+                printf("Codigo do paciente: ");
+                scanf("%d", &codigoBusca);
+                encontrou = 0;
+                for (i = 0; i < totalConsultas; i++) {
+                    if (consultas[i].paciente.codigo == codigoBusca) {
+                        printf("%02d/%02d/%d - %s\n",
+                               consultas[i].data.dia, consultas[i].data.mes, consultas[i].data.ano, consultas[i].descricao);
+                        encontrou = 1;
+                    }
+                }
+                if (encontrou == 0) {
+                    printf("Nenhuma consulta encontrada.\n");
+                }
+                break;
+
+            case 4:
+                printf("Data (dia mes ano): ");
+                scanf("%d %d %d", &diaBusca, &mesBusca, &anoBusca);
+                encontrou = 0;
+                for (i = 0; i < totalConsultas; i++) {
+                    if (consultas[i].data.dia == diaBusca && consultas[i].data.mes == mesBusca && consultas[i].data.ano == anoBusca) {
+                        printf("%s - %s\n", consultas[i].paciente.nome, consultas[i].descricao);
+                        encontrou = 1;
+                    }
+                }
+                if (encontrou == 0) {
+                    printf("Nenhuma consulta nessa data.\n");
+                }
+                break;
+
+            case 5:
+                if (totalPacientes == 0) {
+                    printf("Nenhum paciente cadastrado.\n");
+                    break;
+                }
+
+                maiorAtendimentos = -1;
+                indicePacienteMaisAtendido = 0;
+                for (i = 0; i < totalPacientes; i++) {
+                    contadorConsultas = 0;
+                    for (j = 0; j < totalConsultas; j++) {
+                        if (consultas[j].paciente.codigo == pacientes[i].codigo) {
+                            contadorConsultas++;
+                        }
+                    }
+                    printf("%s: %d consulta(s)\n", pacientes[i].nome, contadorConsultas);
+
+                    if (contadorConsultas > maiorAtendimentos) {
+                        maiorAtendimentos = contadorConsultas;
+                        indicePacienteMaisAtendido = i;
+                    }
+                }
+                printf("Paciente com mais atendimentos: %s (%d)\n", pacientes[indicePacienteMaisAtendido].nome, maiorAtendimentos);
+                break;
+        }
+    } while (opcao != 0);
+
+    return 0;
+}
