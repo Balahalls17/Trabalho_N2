@@ -1,0 +1,103 @@
+
+#include <stdio.h>
+
+struct Produto {
+    int codigo;
+    char nome[50];
+    float preco;
+    int estoque;
+};
+
+struct Venda {
+    struct Produto produto;
+    int quantidadeVendida;
+    float valorTotal;
+};
+
+int main() {
+    struct Produto produtos[10];
+    struct Venda vendas[20];
+    float faturamentoPorProduto[10] = {0}, faturamentoTotal = 0;
+    int totalProdutos = 0, totalVendas = 0, opcao, i, codigoBusca, quantidade, posicaoEncontrada, indiceMaiorFaturamento;
+
+    do {
+        printf("\n1 - Cadastrar produto\n");
+        printf("2 - Registrar venda\n");
+        printf("3 - Relatorio de faturamento\n");
+        printf("0 - Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if (totalProdutos >= 10) {
+                    printf("Limite de produtos atingido.\n");
+                    break;
+                }
+                printf("Codigo: ");
+                scanf("%d", &produtos[totalProdutos].codigo);
+                printf("Nome: ");
+                scanf(" %[^\n]", produtos[totalProdutos].nome);
+                printf("Preco: ");
+                scanf("%f", &produtos[totalProdutos].preco);
+                printf("Estoque: ");
+                scanf("%d", &produtos[totalProdutos].estoque);
+                totalProdutos++;
+                break;
+
+            case 2:
+                if (totalVendas >= 20) {
+                    printf("Limite de vendas atingido.\n");
+                    break;
+                }
+                printf("Codigo do produto: ");
+                scanf("%d", &codigoBusca);
+
+                posicaoEncontrada = -1;
+                for (i = 0; i < totalProdutos; i++) {
+                    if (produtos[i].codigo == codigoBusca) {
+                        posicaoEncontrada = i;
+                    }
+                }
+
+                if (posicaoEncontrada == -1) {
+                    printf("Produto nao encontrado.\n");
+                } else {
+                    printf("Quantidade: ");
+                    scanf("%d", &quantidade);
+
+                    if (quantidade > produtos[posicaoEncontrada].estoque) {
+                        printf("Estoque insuficiente.\n");
+                    } else {
+                        vendas[totalVendas].produto = produtos[posicaoEncontrada];
+                        vendas[totalVendas].quantidadeVendida = quantidade;
+                        vendas[totalVendas].valorTotal = produtos[posicaoEncontrada].preco * quantidade;
+
+                        produtos[posicaoEncontrada].estoque -= quantidade;
+                        faturamentoTotal += vendas[totalVendas].valorTotal;
+                        faturamentoPorProduto[posicaoEncontrada] += vendas[totalVendas].valorTotal;
+                        totalVendas++;
+
+                        printf("Venda registrada: R$ %.2f\n", vendas[totalVendas - 1].valorTotal);
+                    }
+                }
+                break;
+
+            case 3:
+                printf("Faturamento total: R$ %.2f\n", faturamentoTotal);
+                if (totalProdutos > 0 && totalVendas > 0) {
+                    indiceMaiorFaturamento = 0;
+                    for (i = 1; i < totalProdutos; i++) {
+                        if (faturamentoPorProduto[i] > faturamentoPorProduto[indiceMaiorFaturamento]) {
+                            indiceMaiorFaturamento = i;
+                        }
+                    }
+                    printf("Produto com maior faturamento: %s (R$ %.2f)\n",
+                           produtos[indiceMaiorFaturamento].nome, faturamentoPorProduto[indiceMaiorFaturamento]);
+                }
+                break;
+        }
+    } while (opcao != 0);
+
+    return 0;
+}
