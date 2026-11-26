@@ -1,0 +1,63 @@
+#include <stdio.h>
+
+struct Aluno {
+    int matricula;
+    char nome[50];
+    float nota1;
+    float nota2;
+    float media;
+};
+
+float calcularMedia(float nota1, float nota2) {
+    return (nota1 + nota2) / 2.0;
+}
+
+int main() {
+    struct Aluno alunos[10];
+    int i, indiceMaior = 0, indiceMenor = 0, qtdAcimaMedia = 0;
+    float somaMedias = 0, mediaGeral;
+
+    for (i = 0; i < 10; i++) {
+        printf("\nAluno %d\n", i + 1);
+        printf("Matricula: ");
+        scanf("%d", &alunos[i].matricula);
+        printf("Nome: ");
+        scanf(" %[^\n]", alunos[i].nome);
+        printf("Nota 1: ");
+        scanf("%f", &alunos[i].nota1);
+        printf("Nota 2: ");
+        scanf("%f", &alunos[i].nota2);
+
+        alunos[i].media = calcularMedia(alunos[i].nota1, alunos[i].nota2);
+        somaMedias += alunos[i].media;
+    }
+
+    mediaGeral = somaMedias / 10.0;
+
+    printf("\nSituacao dos alunos:\n");
+    for (i = 0; i < 10; i++) {
+        printf("%s - Media: %.2f - ", alunos[i].nome, alunos[i].media);
+        if (alunos[i].media >= 6.0) {
+            printf("Aprovado\n");
+        } else {
+            printf("Reprovado\n");
+        }
+
+        if (alunos[i].media > alunos[indiceMaior].media) {
+            indiceMaior = i;
+        }
+        if (alunos[i].media < alunos[indiceMenor].media) {
+            indiceMenor = i;
+        }
+        if (alunos[i].media > mediaGeral) {
+            qtdAcimaMedia++;
+        }
+    }
+
+    printf("\nMaior media: %s (%.2f)\n", alunos[indiceMaior].nome, alunos[indiceMaior].media);
+    printf("Menor media: %s (%.2f)\n", alunos[indiceMenor].nome, alunos[indiceMenor].media);
+    printf("Media geral da turma: %.2f\n", mediaGeral);
+    printf("Alunos acima da media geral: %d\n", qtdAcimaMedia);
+
+    return 0;
+}
